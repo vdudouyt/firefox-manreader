@@ -1,0 +1,2 @@
+content	manreader	content/
+overlay	chrome://browser/content/browser.xul	chrome://manreader/content/overlay.xul
