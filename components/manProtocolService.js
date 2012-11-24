@@ -28,9 +28,21 @@ ManpagesProtocol.prototype = {
     var ios = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
     /* Get twitterName from URL */
     var twitterName = aURI.spec.split(":")[1];
-    var channel = ios.newChannel(aURI, "text/html", null);
     /* Have the URL bar change to the new URL */
     //channel.setRequestHeader("X-Moz-Is-Feed", "1", false);
+    var htmlText = '<h1>test</h1>';
+    // Convert the HTML text into an input stream.
+    var converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].
+                    createInstance(Ci.nsIScriptableUnicodeConverter);
+    converter.charset = "UTF-8";
+    var stream = converter.convertToInputStream(htmlText);
+
+    // Set up a channel to load the input stream.
+    var channel = Cc["@mozilla.org/network/input-stream-channel;1"].
+                  createInstance(Ci.nsIInputStreamChannel);
+    channel.setURI(aURI);
+    channel.contentStream = stream;
+    log("~ManpagesProtocol.newChannel");
     return channel;
   },
   classDescription: "Manpages Protocol Handler",
