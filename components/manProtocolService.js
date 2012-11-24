@@ -22,15 +22,28 @@ ManpagesProtocol.prototype = {
     return uri;
   },
 
+  parseURI: function(spec) {
+  	var ret;
+  	if(ret = spec.match(/^man:\/\/([0-9]+)\/(\w+)$/))
+		return({
+			section: parseInt(ret[1]),
+			page: ret[2]
+		});
+	if(ret = spec.match(/^man:\/\/(\w+)$/))
+		return({
+			section: 0,
+			page: ret[1]
+		});
+	return(undefined);
+  },
+
   newChannel: function(aURI)
   {
-    log("ManpagesProtocol.newChannel");
+    // An entry function called when visiting a page
+    log("ManpagesProtocol.newChannel aURI = " + aURI.spec);
     var ios = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
-    /* Get twitterName from URL */
-    var twitterName = aURI.spec.split(":")[1];
-    /* Have the URL bar change to the new URL */
-    //channel.setRequestHeader("X-Moz-Is-Feed", "1", false);
-    var htmlText = '<h1>test</h1>';
+    var htmlText = '<h1>tst</h1>';
+    var data = this.parseURI(aURI.spec);
     // Convert the HTML text into an input stream.
     var converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].
                     createInstance(Ci.nsIScriptableUnicodeConverter);
