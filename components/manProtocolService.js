@@ -37,6 +37,18 @@ ManpagesProtocol.prototype = {
 	return(undefined);
   },
 
+  search_path: "/usr/share/man",
+  getPagePath: function(section, page) {
+  	var path;
+  	for(var i = 1; i <= 7; i++) {
+		if(section && i != section)
+			continue;
+		path = this.search_path + "/man" + i.toString() + "/" + page + '.' + i.toString() + '.gz';
+		if(fileExists(path))
+			return(path);
+	}
+  },
+
   newChannel: function(aURI)
   {
     // An entry function called when visiting a page
@@ -69,11 +81,18 @@ function readDirectory(path) {
 		.createInstance(Components.interfaces.nsILocalFile);
 	file.initWithPath( path );
 	var children = file.directoryEntries;
-	var child;
+	var child, list = [];
 	while (children.hasMoreElements()) {
 		child = children.getNext().QueryInterface(Components.interfaces.nsILocalFile);
 		log(child.leafName + (child.isDirectory() ? ' [DIR]' : ''));
 	}
+}
+
+function fileExists(path) {
+	var file = Components.classes["@mozilla.org/file/local;1"]
+		.createInstance(Components.interfaces.nsILocalFile);
+	file.initWithPath( path );
+	return(file.exists());
 }
 
 function readFile(path) {
