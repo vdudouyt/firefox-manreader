@@ -1,0 +1,2 @@
+component {bbad1420-35f8-11e2-81c1-0800200c9a66} components/manProtocolService.js
+contract @mozilla.org/network/protocol;1?name=t {bbad1420-35f8-11e2-81c1-0800200c9a66}
