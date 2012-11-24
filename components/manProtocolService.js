@@ -64,6 +64,34 @@ ManpagesProtocol.prototype = {
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIProtocolHandler])
 }
 
+function readDirectory(path) {
+	var file = Components.classes["@mozilla.org/file/local;1"]
+		.createInstance(Components.interfaces.nsILocalFile);
+	file.initWithPath( path );
+	var children = file.directoryEntries;
+	var child;
+	while (children.hasMoreElements()) {
+		child = children.getNext().QueryInterface(Components.interfaces.nsILocalFile);
+		log(child.leafName + (child.isDirectory() ? ' [DIR]' : ''));
+	}
+}
+
+function readFile(path) {
+	var file = Components.classes["@mozilla.org/file/local;1"]
+		.createInstance(Components.interfaces.nsILocalFile);
+	file.initWithPath( path );
+	var istream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+		.createInstance(Components.interfaces.nsIFileInputStream);
+	istream.init(file, 0x01, 0444, 0);
+	istream.QueryInterface(Components.interfaces.nsILineInputStream);
+	var hasmore, line = {};
+	do {
+		hasmore = istream.readLine(line);
+		log("line="+line.value);
+	} while(hasmore);
+	istream.close();
+}
+
 function log(data) {
 	var file = Components.classes["@mozilla.org/file/local;1"]
 		.createInstance(Components.interfaces.nsILocalFile);
