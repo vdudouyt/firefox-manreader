@@ -49,13 +49,39 @@ ManpagesProtocol.prototype = {
 	}
   },
 
+  loadManPage: function(path) {
+  	// In: local path
+	// Returns: generated HTML
+	var htmlText = '';
+	var gzip = Components.classes["@mozilla.org/streamconv;1?from=gzip&to=uncompressed"]
+		.createInstance(Components.interfaces.nsIStreamConverter);
+	var file = Components.classes["@mozilla.org/file/local;1"]
+		.createInstance(Components.interfaces.nsILocalFile);
+	file.initWithPath( path );
+	var istream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+		.createInstance(Components.interfaces.nsIFileInputStream);
+	istream.init(file, 0x01, 0444, 0);
+	istream.QueryInterface(Components.interfaces.nsILineInputStream);
+	var hasmore, line = {};
+	do {
+		hasmore = istream.readLine(line);
+		htmlText += line.value;
+	} while(hasmore);
+	istream.close();
+	return("<h1>" + path + "</h1>" + htmlText);
+  },
+
   newChannel: function(aURI)
   {
     // An entry function called when visiting a page
     log("ManpagesProtocol.newChannel aURI = " + aURI.spec);
     var ios = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
-    var htmlText = '<h1>tst</h1>';
-    var data = this.parseURI(aURI.spec);
+    var htmlText;
+    var data, path;
+    if(data = this.parseURI(aURI.spec))
+    	path = this.getPagePath(data.section, data.page);
+    if(path)
+    	htmlText = this.loadManPage(path);
     // Convert the HTML text into an input stream.
     var converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].
                     createInstance(Ci.nsIScriptableUnicodeConverter);
