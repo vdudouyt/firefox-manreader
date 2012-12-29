@@ -38,6 +38,24 @@ var	ID1 = 0x1F,
 	os = 'unix',
 	DEFAULT_LEVEL = 6;
 
+function charCodesToBlob(charCodes) {
+    var chars = [];
+    for (var i = 0; i < charCodes.length; i++) {
+      chars.push(String.fromCharCode(charCodes[i]))
+    }
+
+    return chars.join("");
+}
+
+function blobToCharCodes(blob) {
+    var chars = [];
+    for (var i = 0; i < blob.length; i++) {
+      chars.push(blob.charCodeAt(i));
+    }
+
+    return chars;
+}
+
 function putByte(n, arr) {
 	arr.push(n & 0xFF);
 }
@@ -117,7 +135,7 @@ function readBytes(arr, n) {
 
 function unzip(data, options) {
 	// start with a copy of the array
-	var arr = Array.prototype.slice.call(data, 0),
+	var arr = Array.prototype.slice.call(blobToCharCodes(data), 0),
 		t,
 		compressionMethod,
 		flags,
@@ -179,7 +197,7 @@ function unzip(data, options) {
 	if (compressionMethod === 'deflate') {
 		// give deflate everything but the last 8 bytes
 		// the last 8 bytes are for the CRC32 checksum and filesize
-		res = JSInflate.inflate(arr.splice(0, arr.length - 8));
+		res = JSInflate.inflate(charCodesToBlob(arr.splice(0, arr.length - 8)));
 	}
 
 	if (flags & possibleFlags['FTEXT']) {
