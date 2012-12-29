@@ -6,6 +6,7 @@ const nsIProtocolHandler = Ci.nsIProtocolHandler;
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("chrome://manreader/content/js-inflate.js");
+Components.utils.import("chrome://manreader/content/gzip.js");
 
 function ManpagesProtocol() {
 }
