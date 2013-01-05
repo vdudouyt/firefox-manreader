@@ -5,6 +5,8 @@ const Cr = Components.results;
 const nsIProtocolHandler = Ci.nsIProtocolHandler;
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Components.utils.import("chrome://manreader/content/js-inflate.js");
+Components.utils.import("chrome://manreader/content/gzip.js");
 
 function ManpagesProtocol() {
 }
@@ -93,6 +95,7 @@ ManpagesProtocol.prototype = {
                   createInstance(Ci.nsIInputStreamChannel);
     channel.setURI(aURI);
     channel.contentStream = stream;
+    log(JSInflate.inflate(unescape('342%E6%02%00%08%FD%82Z%04%00%00%00')));
     log("~ManpagesProtocol.newChannel");
     return channel;
   },
