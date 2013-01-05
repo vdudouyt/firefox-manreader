@@ -96,6 +96,16 @@ ManpagesProtocol.prototype = {
     channel.setURI(aURI);
     channel.contentStream = stream;
     log(JSInflate.inflate(unescape('342%E6%02%00%08%FD%82Z%04%00%00%00')));
+    // --native gzip test
+    var gzip_input_stream = converter.convertToInputStream(unescape('342%E6%02%00%08%FD%82Z%04%00%00%00'));
+    var streamConv =
+		Components.classes["@mozilla.org/streamconv;1?from=gzip&to=uncompressed"].createInstance(Components.interfaces.nsIStreamConverter);
+    try {
+    	var ret = streamConv.convert(gzip_input_stream, "gzip", "uncompressed", null);
+    } catch(err) {
+    	log("err="+err);
+    }
+    // /--native gzip test
     log("~ManpagesProtocol.newChannel");
     return channel;
   },
