@@ -61,14 +61,52 @@ ManpagesProtocol.prototype = {
 	var istream = Components.classes["@mozilla.org/network/file-input-stream;1"]
 		.createInstance(Components.interfaces.nsIFileInputStream);
 	istream.init(file, 0x01, 0444, 0);
-	istream.QueryInterface(Components.interfaces.nsILineInputStream);
-	var hasmore, line = {};
-	do {
-		hasmore = istream.readLine(line);
-		htmlText += line.value;
-	} while(hasmore);
-	istream.close();
-	return("<h1>" + path + "</h1>" + htmlText);
+	try {
+	      //listener for the converted data
+	      var listener =
+	      {
+	         onDataAvailable : function(request, context, inputStream, offset, count)
+	         {
+		 	log("onDataAvailable");
+	         },
+	
+	         onStartRequest : function(request, context)   
+	         {
+		 	log("onStartRequest");
+	         },
+	
+	         onStopRequest : function(request, context)
+	         {
+		 	log("onStopRequest");
+	         }
+	      };
+		var istream_uncompressed = gzip.asyncConvertData("gzip", "uncompressed", listener, null)
+
+		//fake uri needed to create a channel
+		var uri = Components.classes["@mozilla.org/network/simple-uri;1"].createInstance(Components.interfaces.nsIURI);
+		
+		//fake channel needed to create a request
+		var chan = Components.classes["@mozilla.org/network/input-stream-channel;1"].createInstance(Components.interfaces.nsIInputStreamChannel);
+		chan.setURI(uri);
+		//chan.contentLength = 1024;
+		chan.contentType = "gzip";
+		chan.contentStream = istream;
+		
+		var request = chan.QueryInterface(Components.interfaces.nsIRequest);
+		log("gzip started");
+	}
+	catch(err) {
+		log("err: " + err);
+	}
+//	istream.QueryInterface(Components.interfaces.nsILineInputStream);
+//	var hasmore, line = {};
+//	do {
+//		hasmore = istream.readLine(line);
+//		htmlText += line.value;
+//	} while(hasmore);
+//	istream.close();
+//	return("<h1>" + path + "</h1>" + htmlText);
+	return("<h1>TT</h1>");
   },
 
   newChannel: function(aURI)
